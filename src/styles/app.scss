@@ -1,0 +1,60 @@
+@import "~purecss/build/pure.css";
+@import "variables";
+
+body, #root {
+    width: 100vw;
+    height: 100vh;
+    padding:0;
+    margin: 0;
+    display: flex;
+    flex: 1;
+    flex-flow: column;
+}
+
+nav, footer {
+    display: flex;
+    flex: 0 0 50px;
+    background-color: $nav-color;
+}
+
+
+main {
+    display: flex;
+    flex: 1;
+    background-color: $bg-color;
+}
+
+.grid, .row, .cell {
+    display: flex;
+    flex: 1;
+}
+.grid {
+    flex-flow: column;
+}
+.row {
+    flex-flow: row;
+}
+.cell {
+    border: 1px solid darken($bg-color, 3%);
+    &:hover {
+        background-color: darken($bg-color, 5%);
+    }
+    &.active {
+        background-color: darken($bg-color, 50%);
+
+        &:hover {
+            background-color: darken($bg-color, 55%);
+        }
+    }
+}
+.grid-wrapper {
+    display: flex;
+    flex: 1;
+    flex-flow: column;
+}
+.grid-bar {
+    display: flex;
+    flex: 0 0 40px;
+    background-color: $nav-color;
+    justify-content: center;
+}

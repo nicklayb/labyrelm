@@ -1,21 +1,19 @@
-port module Main exposing (Model, Msg(..), add1, init, main, toJs, update, view)
+module Main exposing (Model, Msg(..), init, main, update, view)
 
-import Browser
+import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes as Attr exposing (..)
 import Html.Events exposing (..)
 import Http exposing (Error(..))
 import Json.Decode as Decode
-
-
-
--- ---------------------------
--- PORTS
--- ---------------------------
-
-
-port toJs : String -> Cmd msg
+import Page exposing (..)
+import Page.Grid as Grid
+import Page.Home as Home exposing (..)
+import Route exposing (Route)
+import Session exposing (..)
+import Time exposing (..)
+import Url
 
 
 
@@ -24,15 +22,16 @@ port toJs : String -> Cmd msg
 -- ---------------------------
 
 
-type alias Model =
-    { counter : Int
-    , serverMessage : String
-    }
+type Model
+    = NotFound Session
+    | Redirect Session
+    | Home Home.Model
+    | Grid Grid.Model
 
 
-init : Int -> ( Model, Cmd Msg )
-init flags =
-    ( { counter = flags, serverMessage = "" }, Cmd.none )
+init : Int -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
+    changeRouteTo (Route.fromUrl url) (Redirect (Session.init key))
 
 
 
@@ -42,66 +41,84 @@ init flags =
 
 
 type Msg
-    = Inc
-    | Set Int
-    | TestServer
-    | OnServerResponse (Result Http.Error String)
+    = Ignored
+    | LinkClicked Browser.UrlRequest
+    | UrlChanged Url.Url
+    | GotHomeMsg Home.Msg
+    | GotGridMsg Grid.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update message model =
-    case message of
-        Inc ->
-            ( add1 model, toJs "Hello Js" )
+update msg model =
+    case ( msg, model ) of
+        ( Ignored, _ ) ->
+            ( model, Cmd.none )
 
-        Set m ->
-            ( { model | counter = m }, toJs "Hello Js" )
+        ( LinkClicked urlRequest, _ ) ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model
+                    , Nav.pushUrl (Session.navKey (toSession model)) (Url.toString url)
+                    )
 
-        TestServer ->
-            let
-                expect =
-                    Http.expectJson OnServerResponse (Decode.field "result" Decode.string)
-            in
-            ( model
-            , Http.get { url = "/test", expect = expect }
-            )
+                Browser.External url ->
+                    ( model, Nav.load url )
 
-        OnServerResponse res ->
-            case res of
-                Ok r ->
-                    ( { model | serverMessage = r }, Cmd.none )
+        ( UrlChanged url, _ ) ->
+            changeRouteTo (Route.fromUrl url) model
 
-                Err err ->
-                    ( { model | serverMessage = "Error: " ++ httpErrorToString err }, Cmd.none )
+        ( GotGridMsg subMsg, Grid grid ) ->
+            Grid.update subMsg grid
+                |> updateWith Grid GotGridMsg model
 
+        ( GotHomeMsg subMsg, Home home ) ->
+            Home.update subMsg home
+                |> updateWith Home GotHomeMsg model
 
-httpErrorToString : Http.Error -> String
-httpErrorToString err =
-    case err of
-        BadUrl _ ->
-            "BadUrl"
-
-        Timeout ->
-            "Timeout"
-
-        NetworkError ->
-            "NetworkError"
-
-        BadStatus _ ->
-            "BadStatus"
-
-        BadBody s ->
-            "BadBody: " ++ s
+        ( _, _ ) ->
+            ( model, Cmd.none )
 
 
-{-| increments the counter
+changeRouteTo : Maybe Route -> Model -> ( Model, Cmd Msg )
+changeRouteTo maybeRoute model =
+    let
+        session =
+            toSession model
+    in
+    case maybeRoute of
+        Nothing ->
+            ( NotFound session, Cmd.none )
 
-    add1 5 --> 6
+        Just Route.Home ->
+            Home.init session
+                |> updateWith Home GotHomeMsg model
 
--}
-add1 : Model -> Model
-add1 model =
-    { model | counter = model.counter + 1 }
+        Just (Route.Grid width height) ->
+            Grid.init session ( width, height )
+                |> updateWith Grid GotGridMsg model
+
+
+toSession : Model -> Session
+toSession page =
+    case page of
+        NotFound session ->
+            session
+
+        Redirect session ->
+            session
+
+        Home home ->
+            Home.toSession home
+
+        Grid grid ->
+            Grid.toSession grid
+
+
+updateWith : (subModel -> Model) -> (subMsg -> Msg) -> Model -> ( subModel, Cmd subMsg ) -> ( Model, Cmd Msg )
+updateWith toModel toMsg model ( subModel, subCmd ) =
+    ( toModel subModel
+    , Cmd.map toMsg subCmd
+    )
 
 
 
@@ -110,40 +127,40 @@ add1 model =
 -- ---------------------------
 
 
-view : Model -> Html Msg
+view : Model -> Document Msg
 view model =
-    div [ class "container" ]
-        [ header []
-            [ -- img [ src "/images/logo.png" ] []
-              span [ class "logo" ] []
-            , h1 [] [ text "Elm 0.19 Webpack Starter, with hot-reloading" ]
-            ]
-        , p [] [ text "Click on the button below to increment the state." ]
-        , div [ class "pure-g" ]
-            [ div [ class "pure-u-1-3" ]
-                [ button
-                    [ class "pure-button pure-button-primary"
-                    , onClick Inc
-                    ]
-                    [ text "+ 1" ]
-                , text <| String.fromInt model.counter
-                ]
-            , div [ class "pure-u-1-3" ] []
-            , div [ class "pure-u-1-3" ]
-                [ button
-                    [ class "pure-button pure-button-primary"
-                    , onClick TestServer
-                    ]
-                    [ text "ping dev server" ]
-                , text model.serverMessage
-                ]
-            ]
-        , p [] [ text "Then make a change to the source code and see how the state is retained after you recompile." ]
-        , p []
-            [ text "And now don't forget to add a star to the Github repo "
-            , a [ href "https://github.com/simonh1000/elm-webpack-starter" ] [ text "elm-webpack-starter" ]
-            ]
-        ]
+    let
+        render page toMsg config =
+            let
+                { title, body } =
+                    Page.view page config
+            in
+            { title = title
+            , body = List.map (Html.map toMsg) body
+            }
+    in
+    case model of
+        Redirect _ ->
+            render Page.Other (\_ -> Ignored) viewNotFound
+
+        NotFound _ ->
+            render Page.Other (\_ -> Ignored) viewNotFound
+
+        Home home ->
+            render Page.Home GotHomeMsg (Home.view home)
+
+        Grid grid ->
+            render Page.Grid GotGridMsg (Grid.view grid)
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    every 100 sendTick
+
+
+sendTick : Time.Posix -> Msg
+sendTick _ =
+    GotGridMsg Grid.Tick
 
 
 
@@ -154,13 +171,11 @@ view model =
 
 main : Program Int Model Msg
 main =
-    Browser.document
+    Browser.application
         { init = init
         , update = update
-        , view =
-            \m ->
-                { title = "Elm 0.19 starter"
-                , body = [ view m ]
-                }
-        , subscriptions = \_ -> Sub.none
+        , view = view
+        , subscriptions = subscriptions
+        , onUrlChange = UrlChanged
+        , onUrlRequest = LinkClicked
         }
