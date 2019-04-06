@@ -8,6 +8,7 @@ import Page exposing (PageDefinition, link)
 import Route
 import Session exposing (Session(..))
 import Time exposing (..)
+import Utils exposing (..)
 
 
 type alias Model =
@@ -16,6 +17,7 @@ type alias Model =
     , grid : Grid
     , generation : Int
     , autoMode : Bool
+    , seed : Int
     }
 
 
@@ -44,6 +46,8 @@ topBar model =
     div [ class "grid-bar" ]
         [ button [ onClick Evolve ] [ text ("Evolve to " ++ String.fromInt (model.generation + 1)) ]
         , button [ onClick ToggleAuto ] [ text (autoModeText model) ]
+        , button [ onClick Randomize ] [ text "Random" ]
+        , input [ value (String.fromInt model.seed), onInput UpdateSeed ] []
         ]
 
 
@@ -83,6 +87,7 @@ init session size =
       , grid = initGrid size
       , generation = 0
       , autoMode = False
+      , seed = 1
       }
     , Cmd.none
     )
@@ -102,8 +107,14 @@ update msg model =
             , Cmd.none
             )
 
+        UpdateSeed str ->
+            ( { model | seed = Utils.toInt str }, Cmd.none )
+
         ToggleAuto ->
             ( { model | autoMode = GameOfLife.negate model.autoMode }, Cmd.none )
+
+        Randomize ->
+            ( { model | grid = randomGrid model.seed model.grid }, Cmd.none )
 
         Tick ->
             if model.autoMode then
@@ -121,5 +132,7 @@ toSession model =
 type Msg
     = ToggleCell Coord
     | ToggleAuto
+    | UpdateSeed String
     | Evolve
+    | Randomize
     | Tick

@@ -1,6 +1,7 @@
-module GameOfLife exposing (Coord, Grid, coordToString, evolve, initGrid, negate, toCoord, toggleCell)
+module GameOfLife exposing (Coord, Grid, coordToString, evolve, initGrid, negate, randomGrid, toCoord, toggleCell)
 
 import Array exposing (..)
+import Random exposing (..)
 
 
 type alias Grid =
@@ -22,6 +23,28 @@ initGrid ( width, height ) =
             List.repeat width False
     in
     List.repeat height row
+
+
+randomGrid : Int -> Grid -> Grid
+randomGrid seed grid =
+    let
+        inCell y x val =
+            randomBool ((length (fromList grid) * y + x) * seed)
+
+        inRow index row =
+            List.indexedMap (inCell index) row
+    in
+    List.indexedMap inRow grid
+
+
+randomBool : Int -> Bool
+randomBool seedValue =
+    modBy (randomInt seedValue) 2 == 0
+
+
+randomInt : Int -> Int
+randomInt seedValue =
+    Tuple.first (step (int 1 10) (initialSeed seedValue))
 
 
 toggleCell : Grid -> Coord -> Grid

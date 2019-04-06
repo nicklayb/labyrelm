@@ -1,6 +1,6 @@
 # Gelm of life
 
-Elm implementation of popular Conway's game of life. Only used to learning
+Elm implementation of popular Conway's game of life. Only used to learning.
 
 ## Why?
 

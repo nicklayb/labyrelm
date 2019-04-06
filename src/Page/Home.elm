@@ -6,6 +6,7 @@ import Html.Events exposing (onInput)
 import Page exposing (PageDefinition)
 import Route exposing (href)
 import Session exposing (..)
+import Utils exposing (..)
 
 
 type alias Model =
@@ -59,20 +60,10 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UpdateWidth width ->
-            ( { model | width = toInt width }, Cmd.none )
+            ( { model | width = Utils.toInt width }, Cmd.none )
 
         UpdateHeight height ->
-            ( { model | height = toInt height }, Cmd.none )
-
-
-toInt : String -> Int
-toInt str =
-    case String.toInt str of
-        Just int ->
-            int
-
-        Nothing ->
-            0
+            ( { model | height = Utils.toInt height }, Cmd.none )
 
 
 toSession : Model -> Session
