@@ -97,7 +97,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ToggleCell coord ->
-            ( { model | grid = toggleCell model.grid coord }, Cmd.none )
+            ( { model | grid = toggleCell coord model.grid }, Cmd.none )
 
         Evolve ->
             ( { model

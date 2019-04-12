@@ -49,13 +49,13 @@ intAsCell int =
         Dead
 
 
-toggleCell : Grid -> Coord -> Grid
-toggleCell grid coord =
-    updateAt negateCell coord grid
+toggleCell : Coord -> Grid -> Grid
+toggleCell coord =
+    updateAt negateCell coord
 
 
 updateAt : (Cell -> Cell) -> Coord -> Grid -> Grid
-updateAt func coord grid =
+updateAt func coord =
     let
         update ( currentCoord, cell ) =
             if sameCoord currentCoord coord then
@@ -64,11 +64,11 @@ updateAt func coord grid =
             else
                 cell
     in
-    map update grid
+    map update
 
 
 map : (( Coord, Cell ) -> Cell) -> Grid -> Grid
-map func grid =
+map func =
     let
         inCell y x cell =
             func ( ( x, y ), cell )
@@ -76,7 +76,7 @@ map func grid =
         inRow index row =
             List.indexedMap (inCell index) row
     in
-    List.indexedMap inRow grid
+    List.indexedMap inRow
 
 
 sameCoord : Coord -> Coord -> Bool
