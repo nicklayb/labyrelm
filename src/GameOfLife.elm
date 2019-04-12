@@ -50,8 +50,8 @@ intAsCell int =
 
 
 toggleCell : Coord -> Grid -> Grid
-toggleCell coord =
-    updateAt negateCell coord
+toggleCell =
+    updateAt negateCell
 
 
 updateAt : (Cell -> Cell) -> Coord -> Grid -> Grid
@@ -166,11 +166,12 @@ getInGrid ( x, y ) grid =
 
 siblingCoordinates : Coord -> List Coord
 siblingCoordinates coord =
-    let
-        sibling ( centerX, centerY ) ( x, y ) =
-            ( centerX + x, centerY + y )
-    in
-    List.map (sibling coord) siblings
+    List.map (addCoord coord) siblings
+
+
+addCoord : Coord -> Coord -> Coord
+addCoord ( centerX, centerY ) ( x, y ) =
+    ( centerX + x, centerY + y )
 
 
 evolveCell : Grid -> ( Coord, Cell ) -> Cell
