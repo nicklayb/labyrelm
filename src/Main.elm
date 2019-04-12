@@ -155,7 +155,7 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    every 100 sendTick
+    every 200 sendTick
 
 
 sendTick : Time.Posix -> Msg

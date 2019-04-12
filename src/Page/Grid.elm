@@ -60,18 +60,18 @@ viewGrid grid =
     div [ class "grid" ] (List.indexedMap viewRow grid)
 
 
-viewCell : Int -> Int -> Bool -> Html Msg
+viewCell : Int -> Int -> Cell -> Html Msg
 viewCell y x cell =
     div [ class (cellClass cell), onMouseDown (ToggleCell ( x, y )) ] []
 
 
-cellClass : Bool -> String
+cellClass : Cell -> String
 cellClass cell =
     case cell of
-        True ->
+        Alive ->
             "cell active"
 
-        False ->
+        Dead ->
             "cell"
 
 
@@ -111,10 +111,10 @@ update msg model =
             ( { model | seed = Utils.toInt str }, Cmd.none )
 
         ToggleAuto ->
-            ( { model | autoMode = GameOfLife.negate model.autoMode }, Cmd.none )
+            ( { model | autoMode = negate model.autoMode }, Cmd.none )
 
         Randomize ->
-            ( { model | grid = randomGrid model.seed model.grid }, Cmd.none )
+            ( { model | grid = randomGrid model.size model.seed }, Cmd.none )
 
         Tick ->
             if model.autoMode then
@@ -122,6 +122,15 @@ update msg model =
 
             else
                 ( model, Cmd.none )
+
+
+negate : Bool -> Bool
+negate val =
+    if val == True then
+        False
+
+    else
+        True
 
 
 toSession : Model -> Session

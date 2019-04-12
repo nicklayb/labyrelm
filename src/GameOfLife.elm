@@ -1,11 +1,16 @@
-module GameOfLife exposing (Coord, Grid, coordToString, evolve, initGrid, negate, randomGrid, toCoord, toggleCell)
+module GameOfLife exposing (Cell(..), Coord, Grid, coordToString, evolve, initGrid, randomGrid, toCoord, toggleCell)
 
 import Array exposing (..)
 import Random exposing (..)
 
 
+type Cell
+    = Alive
+    | Dead
+
+
 type alias Grid =
-    List (List Bool)
+    List (List Cell)
 
 
 type alias Coord =
@@ -13,49 +18,60 @@ type alias Coord =
 
 
 type alias SiblingGrid =
-    List (List ( Int, Bool ))
+    List (List ( Int, Cell ))
 
 
 initGrid : Coord -> Grid
 initGrid ( width, height ) =
     let
         row =
-            List.repeat width False
+            List.repeat width Dead
     in
     List.repeat height row
 
 
-randomGrid : Int -> Grid -> Grid
-randomGrid seed grid =
-    let
-        inCell y x val =
-            randomBool ((length (fromList grid) * y + x) * seed)
-
-        inRow index row =
-            List.indexedMap (inCell index) row
-    in
-    List.indexedMap inRow grid
+randomGrid : Coord -> Int -> Grid
+randomGrid size seed =
+    Tuple.first (Random.step (randomGridGenerator size) (initialSeed seed))
 
 
-randomBool : Int -> Bool
-randomBool seedValue =
-    modBy (randomInt seedValue) 2 == 0
+randomGridGenerator : Coord -> Generator Grid
+randomGridGenerator ( width, height ) =
+    Random.list height (Random.list width (Random.map intAsCell (Random.int 1 10)))
 
 
-randomInt : Int -> Int
-randomInt seedValue =
-    Tuple.first (step (int 1 10) (initialSeed seedValue))
+intAsCell : Int -> Cell
+intAsCell int =
+    if modBy int 2 == 0 then
+        Alive
+
+    else
+        Dead
 
 
 toggleCell : Grid -> Coord -> Grid
-toggleCell grid ( newX, newY ) =
+toggleCell grid coord =
+    updateAt negateCell coord grid
+
+
+updateAt : (Cell -> Cell) -> Coord -> Grid -> Grid
+updateAt func coord grid =
     let
-        inCell y x val =
-            if newX == x && newY == y then
-                negate val
+        update ( currentCoord, cell ) =
+            if sameCoord currentCoord coord then
+                func cell
 
             else
-                val
+                cell
+    in
+    map update grid
+
+
+map : (( Coord, Cell ) -> Cell) -> Grid -> Grid
+map func grid =
+    let
+        inCell y x cell =
+            func ( ( x, y ), cell )
 
         inRow index row =
             List.indexedMap (inCell index) row
@@ -63,13 +79,18 @@ toggleCell grid ( newX, newY ) =
     List.indexedMap inRow grid
 
 
-negate : Bool -> Bool
-negate val =
-    if val == True then
-        False
+sameCoord : Coord -> Coord -> Bool
+sameCoord ( firstX, firstY ) ( secondX, secondY ) =
+    firstX == secondX && firstY == secondY
+
+
+negateCell : Cell -> Cell
+negateCell cell =
+    if cell == Alive then
+        Dead
 
     else
-        True
+        Alive
 
 
 toCoord : Int -> Int -> Coord
@@ -87,7 +108,7 @@ sizeOf grid =
     ( List.length (head grid), List.length grid )
 
 
-head : Grid -> List Bool
+head : Grid -> List Cell
 head grid =
     case List.head grid of
         Just list ->
@@ -110,28 +131,25 @@ siblings =
     ]
 
 
-countSiblingsOf : Coord -> Grid -> Bool -> ( Int, Bool )
-countSiblingsOf ( x, y ) grid val =
+countSiblings : Coord -> Grid -> Cell -> Int
+countSiblings ( x, y ) grid val =
     let
         qualifiedSiblings =
             siblingCoordinates ( x, y )
-
-        fold =
-            List.foldl (siblingsQuantifier grid) 0 qualifiedSiblings
     in
-    ( fold, val )
+    List.foldl (siblingsQuantifier grid) 0 qualifiedSiblings
 
 
 siblingsQuantifier : Grid -> Coord -> Int -> Int
 siblingsQuantifier grid sibling acc =
-    if getInGrid sibling grid then
+    if getInGrid sibling grid == Alive then
         acc + 1
 
     else
         acc
 
 
-getInGrid : ( Int, Int ) -> Grid -> Bool
+getInGrid : Coord -> Grid -> Cell
 getInGrid ( x, y ) grid =
     case get y (fromList grid) of
         Just row ->
@@ -140,10 +158,10 @@ getInGrid ( x, y ) grid =
                     cell
 
                 Nothing ->
-                    False
+                    Dead
 
         Nothing ->
-            False
+            Dead
 
 
 siblingCoordinates : Coord -> List Coord
@@ -155,26 +173,19 @@ siblingCoordinates coord =
     List.map (sibling coord) siblings
 
 
-evolveCell : ( Int, Bool ) -> Bool
-evolveCell ( count, currentState ) =
-    case count of
+evolveCell : Grid -> ( Coord, Cell ) -> Cell
+evolveCell grid ( coord, cell ) =
+    case countSiblings coord grid cell of
         2 ->
-            currentState
+            cell
 
         3 ->
-            True
+            Alive
 
         _ ->
-            False
+            Dead
 
 
 evolve : Grid -> Grid
 evolve grid =
-    let
-        inCell y x val =
-            evolveCell (countSiblingsOf ( x, y ) grid val)
-
-        inRow index row =
-            List.indexedMap (inCell index) row
-    in
-    List.indexedMap inRow grid
+    map (evolveCell grid) grid
