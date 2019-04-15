@@ -35,15 +35,24 @@ main {
     flex-flow: row;
 }
 .cell {
-    border: 1px solid darken($bg-color, 3%);
-    &:hover {
-        background-color: darken($bg-color, 5%);
-    }
-    &.active {
-        background-color: darken($bg-color, 50%);
+    justify-content: center;
+    align-items: center;
+    font-size: 50pt;
 
-        &:hover {
-            background-color: darken($bg-color, 55%);
+    &.current::before {
+        content: "🤔";
+    }
+    &.wall {
+        background-color: gray;
+    }
+    &.path.entry{
+        background-color: whitesmoke;
+    }
+    &.path.exit {
+        background-color: lightgray;
+
+        &.current::before {
+            content: "🤓";
         }
     }
 }

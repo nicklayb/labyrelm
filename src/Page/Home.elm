@@ -13,12 +13,14 @@ type alias Model =
     { session : Session
     , width : Int
     , height : Int
+    , seed : Int
     }
 
 
 type Msg
     = UpdateWidth String
     | UpdateHeight String
+    | UpdateSeed String
 
 
 init : Session -> ( Model, Cmd Msg )
@@ -26,13 +28,14 @@ init session =
     ( { session = session
       , width = 0
       , height = 0
+      , seed = 0
       }
     , Cmd.none
     )
 
 
 view : Model -> PageDefinition Msg
-view { width, height } =
+view { width, height, seed } =
     { title = "Home"
     , content =
         div []
@@ -45,7 +48,11 @@ view { width, height } =
                     [ label [] [ text "Height" ]
                     , input [ value (String.fromInt height), onInput UpdateHeight ] []
                     ]
-                , a [ Route.href (Route.Grid width height) ] [ text (buttonText width height) ]
+                , div []
+                    [ label [] [ text "Seed" ]
+                    , input [ value (String.fromInt seed), onInput UpdateSeed ] []
+                    ]
+                , a [ Route.href (Route.Game seed width height) ] [ text (buttonText width height) ]
                 ]
             ]
     }
@@ -53,7 +60,7 @@ view { width, height } =
 
 buttonText : Int -> Int -> String
 buttonText width height =
-    "Create a " ++ String.fromInt width ++ " by " ++ String.fromInt height ++ " game of life grid"
+    "Create a " ++ String.fromInt width ++ " by " ++ String.fromInt height ++ " labyrinth"
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -64,6 +71,9 @@ update msg model =
 
         UpdateHeight height ->
             ( { model | height = Utils.toInt height }, Cmd.none )
+
+        UpdateSeed seed ->
+            ( { model | seed = Utils.toInt seed }, Cmd.none )
 
 
 toSession : Model -> Session
