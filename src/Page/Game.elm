@@ -64,7 +64,7 @@ viewport model =
 
                 Path ->
                     if clickable coordToMove then
-                        div [ class (cellClass coord), onClick (Move coordToMove) ] []
+                        div [ class (cellClass coord ++ getArrow ( rowIndex, colIndex )), onClick (Move coordToMove) ] []
 
                     else
                         div [ class (cellClass coord) ] []
@@ -83,7 +83,7 @@ pathClass { current, entry, end } coord =
                 " current"
 
             else
-                " "
+                ""
 
         with str =
             "cell path " ++ str ++ currentStr
@@ -96,6 +96,29 @@ pathClass { current, entry, end } coord =
 
     else
         with ""
+
+
+getArrow : Coord -> String
+getArrow coord =
+    let
+        arrow =
+            case coord of
+                ( 0, 1 ) ->
+                    "up"
+
+                ( 1, 0 ) ->
+                    "left"
+
+                ( 1, 2 ) ->
+                    "right"
+
+                ( 2, 1 ) ->
+                    "down"
+
+                _ ->
+                    ""
+    in
+    " arrow " ++ arrow
 
 
 success : Model -> Bool

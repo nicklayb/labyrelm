@@ -56,6 +56,25 @@ main {
         }
     }
 }
+.arrow {
+    color: #737373;
+    opacity: 0.6;
+    &:hover {
+        opacity: 1;
+    }
+}
+.up:before  {
+    content: "↑";
+}
+.left:before  {
+    content: "←";
+}
+.right:before  {
+    content: "→";
+}
+.down:before  {
+    content: "↓";
+}
 .grid-wrapper {
     display: flex;
     flex: 1;
