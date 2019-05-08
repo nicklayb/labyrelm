@@ -50,6 +50,7 @@ main {
     }
     &.path.exit {
         background-color: lightgray;
+        content: "👓";
 
         &.current::before {
             content: "🤓";
