@@ -57,6 +57,9 @@ viewport model =
             let
                 coordToMove =
                     ( colIndex - 1, rowIndex - 1 )
+
+                relativeCoord =
+                    ( rowIndex, colIndex )
             in
             case cell of
                 Wall ->
@@ -64,10 +67,10 @@ viewport model =
 
                 Path ->
                     if clickable coordToMove then
-                        div [ class (cellClass coord ++ getArrow ( rowIndex, colIndex )), onClick (Move coordToMove) ] []
+                        div [ class (cellClass coord relativeCoord), onClick (Move coordToMove) ] []
 
                     else
-                        div [ class (cellClass coord) ] []
+                        div [ class (cellClass coord relativeCoord) ] []
 
         inRow index row =
             div [ class "row" ] (List.indexedMap (inCell index) row)
@@ -75,18 +78,18 @@ viewport model =
     div [ class "grid" ] (List.indexedMap inRow viewGrid)
 
 
-pathClass : Model -> Coord -> String
-pathClass { current, entry, end } coord =
+pathClass : Model -> Coord -> Coord -> String
+pathClass { current, entry, end } coord relativeCoord =
     let
         currentStr =
             if sameCoord current coord then
-                " current"
+                "current"
 
             else
                 ""
 
         with str =
-            "cell path " ++ str ++ currentStr
+            String.join " " [ "cell", "path", getArrow relativeCoord, str, currentStr ]
     in
     if sameCoord entry coord then
         with "entry"
