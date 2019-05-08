@@ -11,9 +11,5 @@ tag:
 	docker tag $(IMAGE_TAG) $(REMOTE_TAG)
 
 .PHONY: push
-push: compile build tag
+push: build tag
 	docker push $(REMOTE_TAG)
-
-.PHONY: compile
-compile:
-	npm run prod
