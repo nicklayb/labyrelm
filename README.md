@@ -1,5 +1,7 @@
 # Gelm of life
 
+[Demo](https://nicklayb.github.io/gelm_of_life)
+
 Elm implementation of popular Conway's game of life. Only used to learning.
 
 ## Why?
