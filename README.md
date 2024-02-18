@@ -1,6 +1,6 @@
 # K U B
 
-Demo: [https://kub.sandbox.nboisvert.com](https://kub.sandbox.nboisvert.com)
+Demo: [https://nicklayb.github.io/kub](https://nicklayb.github.io/kub)
 
 ![Demo of KUB](demo.gif)
 
