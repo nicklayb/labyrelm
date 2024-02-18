@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Quicksand');
+@import "~purecss/build/pure.css";
 @import "variables";
 
 body, #root {
@@ -9,7 +9,6 @@ body, #root {
     display: flex;
     flex: 1;
     flex-flow: column;
-    font-family: 'Quicksand', sans-serif;
 }
 
 nav, footer {
@@ -25,135 +24,37 @@ main {
     background-color: $bg-color;
 }
 
-.flex {
+.grid, .row, .cell {
     display: flex;
     flex: 1;
 }
-
-.flex-auto {
-    flex: 0 0 auto;
-}
-
-
-.wrapper {
-    justify-content: center;
-    align-items: center;
-}
-
-@media screen and (max-width: 992px) {
-    .wrapper {
-        flex-direction: column;
-    }
-    .grid {
-        width: 100%;
-    }
-}
-
 .grid {
-    max-width: 400px;
-    background-color: #f9f9f9
-}
-
-.jc-center {
-    justify-content: center;
-}
-
-.ai-center {
-    align-items: center;
-}
-
-.row {
-    flex-direction: column;
-}
-
-.column {
-    flex-direction: row;
-}
-
-.stats {
-    font-size: 14pt;
-}
-
-.stats-value {
-    font-weight: 600;
-}
-
-.cell {
-    text-align: center;;
-    opacity: 0.8;
-    flex: 0 0 30px;
-    transition: 0.1s all ease-in;
-    &.selected {
-        opacity: 1;
-        box-shadow: 3px 3px 3px #00000040;
-        transform: scale(1.15);
-        z-index: 1;
-    }
-    &:not(.empty):not(.selected):hover {
-        opacity: 1;
-        box-shadow: 1px 1px 3px #00000040;
-        transform: scale(1.15);
-        z-index: 2;
-    }
-}
-
-.stats-box {
     flex-flow: column;
-    flex: 0 0 300px;
 }
-
-.stats {
-    padding: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 100;
-    color: #818181;
+.row {
+    flex-flow: row;
 }
-
-.border- { border: $border-size solid whitesmoke; }
-
-.border-red { border: $border-size solid $red; }
-.red { background-color: $red; }
-
-
-.border-green { border: $border-size solid $green; }
-.green { background-color: $green; }
-
-
-.border-blue { border: $border-size solid $blue; }
-.blue { background-color: $blue; }
-
-
-.border-yellow { border: $border-size solid $yellow; }
-.yellow { background-color: $yellow; }
-
-.start {
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: 100;
-    text-decoration: none;
-    font-size: 2em;
-}
-
-a {
-    text-decoration: none;
-    border-bottom: 2px solid;
-    padding: 3px 10px;
-    color: $red;
+.cell {
+    border: 1px solid darken($bg-color, 3%);
     &:hover {
-        color: #d784c8;
+        background-color: darken($bg-color, 5%);
+    }
+    &.active {
+        background-color: darken($bg-color, 50%);
+
+        &:hover {
+            background-color: darken($bg-color, 55%);
+        }
     }
 }
-
-.progress {
-    width: 200px;
-    border: 3px solid $bg-color;
-    height: 30px;
-    position: relative;
+.grid-wrapper {
     display: flex;
-    span {
-        display: block;
-        position: relative;
-        height: 100%;
-    }
+    flex: 1;
+    flex-flow: column;
+}
+.grid-bar {
+    display: flex;
+    flex: 0 0 40px;
+    background-color: $nav-color;
+    justify-content: center;
 }

@@ -8,7 +8,7 @@ import Route exposing (Route(..))
 
 type Page
     = Home
-    | Game
+    | Grid
     | Other
 
 
@@ -19,16 +19,31 @@ type alias PageDefinition msg =
 
 
 view : Page -> PageDefinition msg -> Document msg
-view _ { title, content } =
-    { title = title
+view page { title, content } =
+    { title = title ++ " - Game of life"
     , body = [ viewBody content ]
     }
 
+
+viewFooter =
+    footer [] [ text "Footer" ]
+
+
+viewHeader : Html msg
+viewHeader =
+    nav [] []
 
 
 viewBody : Html msg -> Html msg
 viewBody content =
     Html.main_ [] [ content ]
+
+
+viewNav =
+    nav []
+        [ ul []
+            [ link Route.Home "Home" ]
+        ]
 
 
 viewNotFound : PageDefinition msg

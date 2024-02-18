@@ -8,16 +8,16 @@ import Url.Parser as Parser exposing ((</>), Parser, oneOf, s)
 
 type Route
     = Home
-    | Game Int
+    | Grid Int Int
 
 
 parser : Parser (Route -> a) a
 parser =
-    s "kub"
+    s "gelm_of_life"
         </> oneOf
                 [ Parser.map Home Parser.top
                 , Parser.map Home (s "home")
-                , Parser.map Game (s "game" </> Parser.int)
+                , Parser.map Grid (s "grid" </> Parser.int </> Parser.int)
                 ]
 
 
@@ -34,10 +34,10 @@ routeToString page =
                 Home ->
                     [ "home" ]
 
-                Game seed ->
-                    [ "game", String.fromInt seed ]
+                Grid width height ->
+                    [ "grid", String.fromInt width, String.fromInt height ]
     in
-    String.join "/" ("/kub" :: pieces)
+    String.join "/" ("/gelm_of_life" :: pieces)
 
 
 href : Route -> Attribute msg

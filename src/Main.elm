@@ -3,10 +3,12 @@ module Main exposing (Model, Msg(..), init, main, update, view)
 import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Html exposing (..)
+import Html.Attributes as Attr exposing (..)
 import Html.Events exposing (..)
 import Http exposing (Error(..))
+import Json.Decode as Decode
 import Page exposing (..)
-import Page.Game as Game
+import Page.Grid as Grid
 import Page.Home as Home exposing (..)
 import Route exposing (Route)
 import Session exposing (..)
@@ -24,11 +26,11 @@ type Model
     = NotFound Session
     | Redirect Session
     | Home Home.Model
-    | Game Game.Model
+    | Grid Grid.Model
 
 
 init : Int -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init _ url key =
+init flags url key =
     changeRouteTo (Route.fromUrl url) (Redirect (Session.init key))
 
 
@@ -43,7 +45,7 @@ type Msg
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | GotHomeMsg Home.Msg
-    | GotGameMsg Game.Msg
+    | GotGridMsg Grid.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -65,9 +67,9 @@ update msg model =
         ( UrlChanged url, _ ) ->
             changeRouteTo (Route.fromUrl url) model
 
-        ( GotGameMsg subMsg, Game game ) ->
-            Game.update subMsg game
-                |> updateWith Game GotGameMsg model
+        ( GotGridMsg subMsg, Grid grid ) ->
+            Grid.update subMsg grid
+                |> updateWith Grid GotGridMsg model
 
         ( GotHomeMsg subMsg, Home home ) ->
             Home.update subMsg home
@@ -91,9 +93,9 @@ changeRouteTo maybeRoute model =
             Home.init session
                 |> updateWith Home GotHomeMsg model
 
-        Just (Route.Game seed) ->
-            Game.init session seed
-                |> updateWith Game GotGameMsg model
+        Just (Route.Grid width height) ->
+            Grid.init session ( width, height )
+                |> updateWith Grid GotGridMsg model
 
 
 toSession : Model -> Session
@@ -108,12 +110,12 @@ toSession page =
         Home home ->
             Home.toSession home
 
-        Game game ->
-            Game.toSession game
+        Grid grid ->
+            Grid.toSession grid
 
 
 updateWith : (subModel -> Model) -> (subMsg -> Msg) -> Model -> ( subModel, Cmd subMsg ) -> ( Model, Cmd Msg )
-updateWith toModel toMsg _ ( subModel, subCmd ) =
+updateWith toModel toMsg model ( subModel, subCmd ) =
     ( toModel subModel
     , Cmd.map toMsg subCmd
     )
@@ -147,13 +149,18 @@ view model =
         Home home ->
             render Page.Home GotHomeMsg (Home.view home)
 
-        Game game ->
-            render Page.Game GotGameMsg (Game.view game)
+        Grid grid ->
+            render Page.Grid GotGridMsg (Grid.view grid)
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
+subscriptions model =
+    every 200 sendTick
+
+
+sendTick : Time.Posix -> Msg
+sendTick _ =
+    GotGridMsg Grid.Tick
 
 
 

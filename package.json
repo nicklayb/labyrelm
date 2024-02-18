@@ -1,5 +1,5 @@
 {
-  "name": "kub",
+  "name": "gelm-of-life",
   "version": "1.0.0",
   "description": "This project is bootstrapped with [Create Elm App](https://github.com/halfzebra/create-elm-app).",
   "main": "index.js",
@@ -10,7 +10,10 @@
     "css:build": "npx node-sass-chokidar src/ -o src/",
     "css:watch": "npm run build-css && npx run node-sass-chokidar src/ -o src/ --watch --recursive",
     "build": "npm run css:build && elm-app build",
-    "dev": "elm-app start"
+    "dev": "npm run css:build && elm-app start"
+  },
+  "dependencies": {
+    "purecss": "^1.0.0"
   },
   "author": "",
   "license": "ISC"
