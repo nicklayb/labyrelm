@@ -1,0 +1,17 @@
+{
+  "name": "kub",
+  "version": "1.0.0",
+  "description": "This project is bootstrapped with [Create Elm App](https://github.com/halfzebra/create-elm-app).",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build-css": "npx node-sass-chokidar src/ -o src/",
+    "watch-css": "npm run build-css && npx run node-sass-chokidar src/ -o src/ --watch --recursive",
+    "build": "npm run css:build && elm-app build",
+    "dev": "elm-app start"
+  },
+  "author": "",
+  "license": "ISC"
+}
