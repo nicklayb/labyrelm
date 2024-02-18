@@ -1,22 +1,38 @@
-# K U B
+# Gelm of life
 
-Demo: [https://nicklayb.github.io/kub](https://nicklayb.github.io/kub)
+Elm implementation of popular Conway's game of life. Only used to learning.
 
-![Demo of KUB](demo.gif)
+## Why?
 
-## What is KUB?
+I always loved writing the Game of Life with different languages to learn them, it has some "challenges" that requires some different implementation from a language to another.
 
-KUB is a block game. Your target is to be able to remove all cells from the grid. Select zones of the same color to remove the zone, unique cell cannot be removed. The first screen you see wants you to input a seed value.
+### How it works
 
-## A seed?
+The Game of life is a cellular automaton by John Horton Conway. [https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)
 
-In the world of the randomness, "seeds" are used to generate random values, for a given seed, the same value will be generated every time. This means that if you play on seed `1`, you will always have the same grid setup each time you start a game. Using `2` will generate a new grid.
+This consist of a grid where you have living and dead cells. It evolves according to the following pattern
 
-## Purpose of the game
+- If a cell has exactly 3 living neighbors, it becomes alive
+- If a cell has exactly 2 living neighbors, it keep it's state
+- Otherwise it dies
 
-The main usage of KUB was learning purposes. I wanted a relaxing block falling game I could write on my own to get used to the Elm programming language.
+## Start the game
 
+Run the following commands to start the development server
 
-## Try it!
+```
+npm install
+npm run start
+```
 
-Try it here [https://kub.sandbox.nboisvert.com](https://kub.sandbox.nboisvert.com), don't hesitate to tag me @_nboisvert on Twitter if complete a seed with you best combo!
+### Home screen
+
+On the home screen you can enter the size of the grid you want. Once you click the `Create a x by y game of life grid` you'll be redirected to `/grid/x/y` where you cell grid lives. (The redirection has forced me to learn and use Elm's routing)
+
+### Grid view
+
+Once you're in a grid, you can click on any dead cell in the board to make it live, alive cells will die on click. Once you want to evolve the cell pattern click "Evolve".
+
+#### Auto mode
+
+I'va included an Auto mode to use Elm's subscribtion. It ticks every 100ms, if the automode is enabled, the pattern will evolve automatically. Click the "Start" button to enable it, click "Stop" to disable it.
