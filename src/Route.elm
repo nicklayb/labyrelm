@@ -37,7 +37,7 @@ routeToString page =
                 Game seed ->
                     [ "game", String.fromInt seed ]
     in
-    String.join "/" ("kub" :: pieces)
+    String.join "/" ("/kub" :: pieces)
 
 
 href : Route -> Attribute msg
