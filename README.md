@@ -1,5 +1,7 @@
 # Labyrelm
 
+[Demo](https://nicklayb.github.io/labyrelm)
+
 Elm implementation of Prim algorithm to generate labyrinth. Only used to learning.
 
 ## Why?
