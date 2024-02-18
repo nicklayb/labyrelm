@@ -32,10 +32,10 @@ routeToString page =
         pieces =
             case page of
                 Home ->
-                    [ "/home" ]
+                    [ "home" ]
 
                 Game seed ->
-                    [ "/game", String.fromInt seed ]
+                    [ "game", String.fromInt seed ]
     in
     String.join "/" ("kub" :: pieces)
 
