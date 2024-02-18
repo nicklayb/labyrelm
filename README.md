@@ -1,22 +1,61 @@
-# Gelm of life
+# Labyrelm
 
-[Demo](https://nicklayb.github.io/gelm-of-life)
-
-Elm implementation of popular Conway's game of life. Only used to learning.
+Elm implementation of Prim algorithm to generate labyrinth. Only used to learning.
 
 ## Why?
 
-I always loved writing the Game of Life with different languages to learn them, it has some "challenges" that requires some different implementation from a language to another.
+I did the Prim Algorithm using C# at University and was wondering how this would be done in functional programming. It has his challenges but, I think, makes a more maintenable program.
 
 ### How it works
 
-The Game of life is a cellular automaton by John Horton Conway. [https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)
+The Prim Algorithm is a greedy algorithm that finds a minimum spanning tree for a weighted undirected graph [https://en.wikipedia.org/wiki/Prim%27s_algorithm](https://en.wikipedia.org/wiki/Prim%27s_algorithm)
 
-This consist of a grid where you have living and dead cells. It evolves according to the following pattern
+It basically works this way. Suppose a matrix of nodes with east and south bridges like the following
 
-- If a cell has exactly 3 living neighbors, it becomes alive
-- If a cell has exactly 2 living neighbors, it keep it's state
-- Otherwise it dies
+```
+# 3 # 6 # 9 #
+2   5   2   1
+# 1 # 3 # 2 #
+4   7   9   3
+# 7 # 5 # 3 #
+```
+
+- `#` are nodes
+- `+` are visited nodes
+- `[0-10]` are bridges. The number is their weight.
+
+Starting with any border node (let's say (0, 0)), you browse the visited node the find the lowest edge **that is not connected to an already visited node**. From (0, 0), the lowest is `2` on the south. You mark this bridge as selected and add the node connected to it in the visited node. (It now contains `[(0, 0), (1, 0)]`).
+
+```
++ 3 # 6 # 9 #
+|   5   2   1
++ 1 # 3 # 2 #
+4   7   9   3
+# 7 # 5 # 3 #
+```
+
+Then again we browse the visited node the find the lowest bridge. The lowest is the one connected with the (1, 0) node. We mark the bridge as selected and then we add the node connected to it as vissted.
+
+
+```
++ 3 # 6 # 9 #
+|   5   2   1
++ - + 3 # 2 #
+4   7   9   3
+# 7 # 5 # 3 #
+```
+
+Repeat the process until the visited node count matches the total node count. In the end the maze would look like this
+
+
+```
++ - +   +   +
+|       |   |
++ - + - + - +
+|           |
++   + - + - +
+```
+
 
 ## Start the game
 
@@ -29,12 +68,8 @@ npm run start
 
 ### Home screen
 
-On the home screen you can enter the size of the grid you want. Once you click the `Create a x by y game of life grid` you'll be redirected to `/grid/x/y` where you cell grid lives. (The redirection has forced me to learn and use Elm's routing)
+On the home screen you can enter the size of the grid you want and the seed to use. Once you click the `Create a x by y labyrinth` you'll be redirected to `/game/seed/x/y` where you have a viewport of 3 by 3 on your labyrinth. (The redirection has forced me to learn and use Elm's routing).
 
 ### Grid view
 
-Once you're in a grid, you can click on any dead cell in the board to make it live, alive cells will die on click. Once you want to evolve the cell pattern click "Evolve".
-
-#### Auto mode
-
-I'va included an Auto mode to use Elm's subscribtion. It ticks every 100ms, if the automode is enabled, the pattern will evolve automatically. Click the "Start" button to enable it, click "Stop" to disable it.
+Click the Up/Right/Down/Left case to move in the labyrinth to that direction. Once you'll find the end, your emoji will be happy. Gray block are walls and white ones are floor.

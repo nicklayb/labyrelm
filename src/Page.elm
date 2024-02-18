@@ -8,7 +8,7 @@ import Route exposing (Route(..))
 
 type Page
     = Home
-    | Grid
+    | Game
     | Other
 
 
@@ -20,7 +20,7 @@ type alias PageDefinition msg =
 
 view : Page -> PageDefinition msg -> Document msg
 view page { title, content } =
-    { title = title ++ " - Game of life"
+    { title = title ++ " - Labyrinth"
     , body = [ viewBody content ]
     }
 

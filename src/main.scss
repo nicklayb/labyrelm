@@ -35,17 +35,48 @@ main {
     flex-flow: row;
 }
 .cell {
-    border: 1px solid darken($bg-color, 3%);
-    &:hover {
-        background-color: darken($bg-color, 5%);
-    }
-    &.active {
-        background-color: darken($bg-color, 50%);
+    justify-content: center;
+    align-items: center;
+    font-size: 50pt;
 
-        &:hover {
-            background-color: darken($bg-color, 55%);
+    &.current::before {
+        content: "🤔";
+    }
+    &.wall {
+        background-color: gray;
+    }
+    &.path.entry{
+        background-color: whitesmoke;
+    }
+    &.path.exit {
+        background-color: lightgray;
+        &:before {
+            content: "👓";
+        }
+
+        &.current::before {
+            content: "🤓";
         }
     }
+}
+.arrow {
+    color: #737373;
+    opacity: 0.6;
+    &:hover {
+        opacity: 1;
+    }
+}
+.up:before  {
+    content: "↑";
+}
+.left:before  {
+    content: "←";
+}
+.right:before  {
+    content: "→";
+}
+.down:before  {
+    content: "↓";
 }
 .grid-wrapper {
     display: flex;
