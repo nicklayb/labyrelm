@@ -7,8 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "build-css": "npx node-sass-chokidar src/ -o src/",
-    "watch-css": "npm run build-css && npx run node-sass-chokidar src/ -o src/ --watch --recursive",
+    "css:build": "npx node-sass-chokidar src/ -o src/",
+    "css:watch": "npm run build-css && npx run node-sass-chokidar src/ -o src/ --watch --recursive",
     "build": "npm run css:build && elm-app build",
     "dev": "elm-app start"
   },
