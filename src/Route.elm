@@ -13,7 +13,7 @@ type Route
 
 parser : Parser (Route -> a) a
 parser =
-    s "gelm_of_life"
+    s "gelm-of-life"
         </> oneOf
                 [ Parser.map Home Parser.top
                 , Parser.map Home (s "home")
@@ -37,7 +37,7 @@ routeToString page =
                 Grid width height ->
                     [ "grid", String.fromInt width, String.fromInt height ]
     in
-    String.join "/" ("/gelm_of_life" :: pieces)
+    String.join "/" ("/gelm-of-life" :: pieces)
 
 
 href : Route -> Attribute msg
