@@ -13,11 +13,12 @@ type Route
 
 parser : Parser (Route -> a) a
 parser =
-    oneOf
-        [ Parser.map Home Parser.top
-        , Parser.map Home (s "home")
-        , Parser.map Game (s "game" </> Parser.int)
-        ]
+    s "kub"
+        </> oneOf
+                [ Parser.map Home Parser.top
+                , Parser.map Home (s "home")
+                , Parser.map Game (s "game" </> Parser.int)
+                ]
 
 
 fromUrl : Url -> Maybe Route
